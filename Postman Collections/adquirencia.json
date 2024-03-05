@@ -1,0 +1,824 @@
+{
+	"info": {
+		"_postman_id": "3b178128-aaa6-4218-a4c1-5dbe182ede18",
+		"name": "Adquirencia",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth0 - Cognito Token",
+			"item": [
+				{
+					"name": "Auth0 User Token",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"id": "ef36f518-1a75-4f66-9bbb-29100939b3ae"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"pm.environment.set(\"token\", response.access_token);"
+								],
+								"type": "text/javascript",
+								"id": "10ae1b0a-37a9-42a9-ac85-6afaab1a4377"
+							}
+						}
+					],
+					"id": "00867dd6-c5c1-4f5e-8ed2-aae6c7b49bdd",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"client_id\": \"{{client_id}}\",\n    \"client_secret\": \"{{secret}}\",\n    \"grant_type\": \"password\",\n    \"audience\": \"{{audience}}\",\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{auth_token_url}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Cognito User Token - AR",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.sendRequest({",
+									"           url: \"https://cognito-idp.us-east-1.amazonaws.com/\",",
+									"           method: 'POST',",
+									"           header: {",
+									"                    'X-Amz-Target': 'AWSCognitoIdentityProviderService.InitiateAuth',",
+									"                    'Content-Type': 'application/x-amz-json-1.1'",
+									"                   },",
+									"            body: {",
+									"                   mode: 'raw',",
+									"                   raw: JSON.stringify({",
+									"                        \"AuthParameters\": {",
+									"                        \"USERNAME\": pm.environment.get(\"username\"),",
+									"                        \"PASSWORD\": pm.environment.get(\"password\")",
+									"                        },",
+									"                        \"AuthFlow\": \"USER_PASSWORD_AUTH\",",
+									"                        \"ClientId\": pm.environment.get(\"cognito_client_id\")",
+									"                    }),",
+									"            options: { ",
+									"                raw: { ",
+									"                        language: 'json' ",
+									"                    } ",
+									"                }",
+									"            }",
+									"}, function (error, response) {",
+									"    //Open CONSOLE if u want to see the final token",
+									"    console.log(\"Reponse \", response.json())",
+									"    console.log(\"Reponse status \", response.code, \"with message: \", response.status)",
+									"    console.log(\"TOKEN: \", response.json().AuthenticationResult.IdToken);",
+									"    pm.environment.set(\"token\", response.json().AuthenticationResult.IdToken);",
+									"});"
+								],
+								"type": "text/javascript",
+								"id": "a0666570-92c8-47be-b0b9-ba61cc5b20f0"
+							}
+						}
+					],
+					"id": "08126fa9-c591-4d43-bcfb-40add2d3f962",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{cognito_token_url}}"
+					},
+					"response": []
+				}
+			],
+			"id": "a998d6fd-2c08-4b83-8c6b-febbcdb722a5"
+		},
+		{
+			"name": "BFF Payments",
+			"item": [
+				{
+					"name": "PSE",
+					"item": [
+						{
+							"name": "Get Banks",
+							"id": "0feb0182-38e4-4e4a-aaf3-f5e3a12d7970",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": "{{bffpayment_url}}/1/pse/banks"
+							},
+							"response": []
+						}
+					],
+					"id": "c0dbc413-76b0-4063-b819-a5a918a93864"
+				},
+				{
+					"name": "POS",
+					"item": [
+						{
+							"name": "Create COL",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d03d540b-38e4-4f8a-9159-904d613ed726",
+										"exec": [
+											"var response = pm.response.json();",
+											"pm.globals.set(\"gv_order_id\", response.order.id);",
+											"pm.globals.set(\"gv_ref_number\", response.order.ref_number);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "d47e4abc-d7c6-41b1-ae7f-6caca96db224",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"device\": {\n        \"serial\": \"MPOS2060800045\"\n    },\n    \"card\": {\n        \"bin\": \"437996\"\n    },\n    \"order\": {\n        \"amount\": 1111,\n        \"taxes\": [\n            {\n                \"name\": \"21%\",\n                \"amount\": 21\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bffpayment_url}}/1/pos"
+							},
+							"response": []
+						},
+						{
+							"name": "Create ARG",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "f056a57a-6fd5-43f3-8084-c57d458d6802",
+										"exec": [
+											"var response = pm.response.json();",
+											"pm.globals.set(\"gv_order_id\", response.order.id);",
+											"pm.globals.set(\"gv_ref_number\", response.order.ref_number);",
+											"pm.globals.set(\"gv_terminal_id\", response.order.terminal_id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "6e82eb15-1664-4cf7-86b9-0db1e3b2cf24",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"device\": {\n        \"serial\": \"SR1200000494\"\n    },\n    \"card\": {\n        \"bin\": \"450799\"//\"400000\"\n    },\n    \"order\": {\n        \"amount\": 100,\n        \"taxes\": [\n            {\n                \"name\": \"21%\",\n                \"amount\": 21\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bffpayment_url}}/1/pos"
+							},
+							"response": []
+						},
+						{
+							"name": "Confirm",
+							"id": "ba190a1c-7d25-4f95-87c0-6f8dd72ce456",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  //\"ref_number\":{{gv_ref_number}},\n  \"ref_number\": \"d572ee25-0911-49ad-8df7-69b147d0547d\",\n  //\"order_id\":{{gv_order_id}},\n  \"order_id\": \"5aa4a5e5-7ef4-4098-a9d2-9f7a60528e08\"\n  //\"terminal_id\": {{gv_terminal_id}}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bffpayment_url}}/1/pos/confirm"
+							},
+							"response": []
+						},
+						{
+							"name": "Tap to Phone",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "8f56ca79-6e09-4ebe-a889-9b3a39b7c18c",
+										"exec": [
+											"var response = pm.response.json();",
+											"pm.globals.set(\"gv_order_id\", response.order_id);",
+											"pm.globals.set(\"gv_ref_number\", response.reference_number);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "e89b296b-b5b3-40b9-a588-18cada4a9ee0",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"order\": {\n    \"amount\": \"100\"\n  },\n  \"payment\": {\n    \"installments\": 1,\n    \"card_type\": \"CREDIT\"\n  },\n  \"client_id\": {\n    \"fingerprint_id\": \"C7:A7:EB:12:7E:21:F1:74:D6:58:E7:85:83:E0:F4:62:4E:91:18:EF:57:93:F4:18:44:2F:36:9B:94:05:09:D4\",\n    \"application_version\": \"1.0.0\",\n    \"application_name\": \"uala\"\n  }\n} ",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bffpayment_url}}/1/pos/tap-to-phone"
+							},
+							"response": []
+						}
+					],
+					"id": "e46e48c9-a94d-4733-aa63-2a9461c65ae6"
+				},
+				{
+					"name": "Business Config",
+					"item": [
+						{
+							"name": "Business config",
+							"id": "6e7cfdc7-b0d6-4ce0-9cff-fa4e29e71ac6",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": "{{bffpayment_url}}/1/business-config"
+							},
+							"response": []
+						}
+					],
+					"id": "dcc31e5b-eaf8-492c-bca0-8432858f30cb"
+				},
+				{
+					"name": "Installments",
+					"id": "8f9b3125-94ef-445d-bece-55a70d8e7b31",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bffpayment_url}}/1/installments?amount=1000",
+							"host": [
+								"{{bffpayment_url}}"
+							],
+							"path": [
+								"1",
+								"installments"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "1000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create order Link",
+					"id": "e43ac6f2-7a66-4f89-aa15-177471f4c10a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 10000,\n    \"tax\": {\n        \"amount\": 10,\n        \"name\": \"IVA 10%\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{bffpayment_url}}/1/link"
+					},
+					"response": [
+						{
+							"id": "8ba7d1a8-3b69-40d1-a016-9e0e263348da",
+							"name": "Link without taxes",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"amount\": 10050\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bffpayment_url}}/1/link"
+							},
+							"_postman_previewlanguage": "Text",
+							"header": [],
+							"cookie": [],
+							"responseTime": null,
+							"body": ""
+						},
+						{
+							"id": "75380ce0-679f-4a20-bb14-eaeefbbb843f",
+							"name": "Link with taxes",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"amount\": 1000,\n    \"tax\": {\n        \"amount\": 10,\n        \"name\": \"IVA 10%\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bffpayment_url}}/1/link"
+							},
+							"_postman_previewlanguage": "Text",
+							"header": [],
+							"cookie": [],
+							"responseTime": null,
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Create order mPOS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "08b171a7-770b-439b-bfe5-8616c9443582",
+								"exec": [
+									"var response = pm.response.json();",
+									"pm.environment.set(\"order_id\", response.sale.orderId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "78de2504-2346-4b29-92d9-44fa40c72018",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 1000,\n    \"signature\": \"signature\",\n    \"bin\": \"437996\",\n    \"tax\": {\n        \"amount\": 10,\n        \"name\": \"IVA 10%\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{bffpayment_url}}/1/mpos"
+					},
+					"response": []
+				},
+				{
+					"name": "Mpos Validate",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"id": "440a871c-72e2-4402-88cc-520b1765896e"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"id": "0e85a563-b90e-484d-bde3-175962dd87d3"
+							}
+						}
+					],
+					"id": "439ceec6-b026-4a4e-88d1-97d9f85ad3ef",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orderId\": {{order_id}},\n    \"terminalId\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{bffpayment_url}}/1/mpos/validate"
+					},
+					"response": []
+				},
+				{
+					"name": "Buy mPOS",
+					"id": "498e32b6-568a-4a9f-89a2-37db14b50091",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{bffpayment_url}}/1/buy/mpos"
+					},
+					"response": []
+				},
+				{
+					"name": "Link - get status",
+					"id": "b044cecf-abe3-4d4b-97b6-db081d10390a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bffpayment_url}}/1/link?token=93a351b51f804a8edc1090e42845f4f1772a19ad77ce1d60",
+							"host": [
+								"{{bffpayment_url}}"
+							],
+							"path": [
+								"1",
+								"link"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "93a351b51f804a8edc1090e42845f4f1772a19ad77ce1d60"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Link - set payment method",
+					"id": "b30944e1-a514-4991-afd5-898707dbb31a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"payment_method\":\"PSE\",\n   \"pse_form\":{\n      \"financial_institution_code\":\"123\",\n      \"buyer_info\":{\n         \"full_name\":\"test test\",\n         \"user_type\":\"person\",\n         \"cellphone_number\":11111111,\n         \"address\":\"calle falsa 123\",\n         \"email\":\"jonatan.moreira@uala.com.ar\",\n         \"identification\":{\n            \"type\":\"person\",\n            \"number\":\"1666666\"\n         }\n      }\n   }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{bffpayment_url}}/1/link/f84c2776-4220-461a-a875-35ddc25db74b"
+					},
+					"response": []
+				},
+				{
+					"name": "SDK Error",
+					"id": "92f742f1-0a19-4e55-bdc4-28192aa0b433",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"order_id\": \"string\",\n  \"ref_number\": \"string\",\n  \"error_message\": \"string\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{bffpayment_url}}/1/pos/error"
+					},
+					"response": []
+				},
+				{
+					"name": "QR",
+					"id": "efedf6df-f113-4073-9a45-918cb462ee0c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{bffpayment_url}}/1/qr"
+					},
+					"response": []
+				}
+			],
+			"id": "04285c83-a20d-4cbc-9a61-58b55f59ef99"
+		},
+		{
+			"name": "BFF Transactions",
+			"item": [
+				{
+					"name": "Transaction Detail",
+					"id": "3e362a22-a0aa-407a-ae07-23ebf2a01e12",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bfftransactions_url}}/1/transaction?transactionId=cbea4e57-58a0-4c3f-af85-eb5dec33a97c",
+							"host": [
+								"{{bfftransactions_url}}"
+							],
+							"path": [
+								"1",
+								"transaction"
+							],
+							"query": [
+								{
+									"key": "transactionId",
+									"value": "cbea4e57-58a0-4c3f-af85-eb5dec33a97c"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "0bb8da01-7130-47e8-ab42-a4d4098477b4"
+		},
+		{
+			"name": "BFF User",
+			"item": [
+				{
+					"name": "Activities",
+					"id": "1644ee93-27b5-406f-b93b-f81e07ba7dc0",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{bffusers_url}}/1/activities"
+					},
+					"response": []
+				},
+				{
+					"name": "Onboarding",
+					"id": "33be12ee-7796-43a3-aada-557d9545d4a6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"MCC\": \"5921\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{bffusers_url}}/1/onboarding"
+					},
+					"response": []
+				},
+				{
+					"name": "Account",
+					"id": "8852cd98-f2db-47e7-ad63-96b7ff52240e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{bffusers_url}}/1/account"
+					},
+					"response": []
+				}
+			],
+			"id": "3795888d-ca7c-4000-9024-9b04c43d4a7c"
+		},
+		{
+			"name": "hola",
+			"item": [
+				{
+					"name": "chau",
+					"id": "db8f4ff1-1ce2-451f-99b6-6a1c05501588",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "hola.com"
+					},
+					"response": []
+				}
+			],
+			"id": "2b4baf36-247b-479a-bb09-169238dab435"
+		},
+		{
+			"name": "MOCK",
+			"id": "73f078cd-e78e-4bb3-8300-52f9e4f7ae44",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{bffpayment_url}}/1/mock?response=500",
+					"host": [
+						"{{bffpayment_url}}"
+					],
+					"path": [
+						"1",
+						"mock"
+					],
+					"query": [
+						{
+							"key": "response",
+							"value": "500"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
