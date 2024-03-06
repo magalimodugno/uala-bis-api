@@ -840,53 +840,6 @@
 				}
 			],
 			"id": "3795888d-ca7c-4000-9024-9b04c43d4a7c"
-		},
-		{
-			"name": "hola",
-			"item": [
-				{
-					"name": "chau",
-					"id": "db8f4ff1-1ce2-451f-99b6-6a1c05501588",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": "hola.com.ar"
-					},
-					"response": []
-				}
-			],
-			"id": "2b4baf36-247b-479a-bb09-169238dab435"
-		},
-		{
-			"name": "MOCK",
-			"id": "73f078cd-e78e-4bb3-8300-52f9e4f7ae44",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "{{bffpayment_url}}/1/mock?response=500",
-					"host": [
-						"{{bffpayment_url}}"
-					],
-					"path": [
-						"1",
-						"mock"
-					],
-					"query": [
-						{
-							"key": "response",
-							"value": "500"
-						}
-					]
-				}
-			},
-			"response": []
 		}
 	]
 }
