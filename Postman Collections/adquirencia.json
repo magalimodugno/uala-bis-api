@@ -123,31 +123,6 @@
 			"name": "BFF Payments",
 			"item": [
 				{
-					"name": "PSE (COL)",
-					"item": [
-						{
-							"name": "Get Banks",
-							"id": "0feb0182-38e4-4e4a-aaf3-f5e3a12d7970",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
-								},
-								"method": "GET",
-								"header": [],
-								"url": "{{bffpayment_url}}/1/pse/banks"
-							},
-							"response": []
-						}
-					],
-					"id": "c0dbc413-76b0-4063-b819-a5a918a93864"
-				},
-				{
 					"name": "POS",
 					"item": [
 						{
@@ -302,6 +277,34 @@
 									}
 								},
 								"url": "{{bffpayment_url}}/1/pos/tap-to-phone"
+							},
+							"response": []
+						},
+						{
+							"name": "SDK Error",
+							"id": "92f742f1-0a19-4e55-bdc4-28192aa0b433",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"order_id\": \"string\",\n  \"ref_number\": \"string\",\n  \"error_message\": \"string\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bffpayment_url}}/1/pos/error"
 							},
 							"response": []
 						}
@@ -469,7 +472,7 @@
 										}
 									}
 								},
-								"url": "{{bffpayment_url}}/1/link/f84c2776-4220-461a-a875-35ddc25db74b"
+								"url": "{{bffpayment_url}}/1/link/{{gv_order_id}}"
 							},
 							"response": []
 						},
@@ -497,7 +500,7 @@
 										}
 									}
 								},
-								"url": "{{bffpayment_url}}/1/link/f84c2776-4220-461a-a875-35ddc25db74b"
+								"url": "{{bffpayment_url}}/1/link/{{gv_order_id}}"
 							},
 							"response": []
 						}
@@ -505,176 +508,207 @@
 					"id": "274095b3-c9c4-44c1-beea-977e9a96d130"
 				},
 				{
-					"name": "Installments",
-					"id": "8f9b3125-94ef-445d-bece-55a70d8e7b31",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": {
-								"token": "{{token}}"
-							}
+					"name": "MPOS",
+					"item": [
+						{
+							"name": "Installments",
+							"id": "8f9b3125-94ef-445d-bece-55a70d8e7b31",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bffpayment_url}}/1/installments?amount=1000",
+									"host": [
+										"{{bffpayment_url}}"
+									],
+									"path": [
+										"1",
+										"installments"
+									],
+									"query": [
+										{
+											"key": "amount",
+											"value": "1000"
+										}
+									]
+								}
+							},
+							"response": []
 						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{bffpayment_url}}/1/installments?amount=1000",
-							"host": [
-								"{{bffpayment_url}}"
-							],
-							"path": [
-								"1",
-								"installments"
-							],
-							"query": [
+						{
+							"name": "Create order mPOS",
+							"event": [
 								{
-									"key": "amount",
-									"value": "1000"
+									"listen": "test",
+									"script": {
+										"id": "08b171a7-770b-439b-bfe5-8616c9443582",
+										"exec": [
+											"var response = pm.response.json();",
+											"pm.environment.set(\"order_id\", response.sale.orderId);"
+										],
+										"type": "text/javascript"
+									}
 								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create order mPOS",
-					"event": [
+							],
+							"id": "78de2504-2346-4b29-92d9-44fa40c72018",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"amount\": 1000,\n    \"signature\": \"signature\",\n    \"bin\": \"400000\",\n    \"tax\": {\n        \"amount\": 10,\n        \"name\": \"IVA 10%\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bffpayment_url}}/1/mpos"
+							},
+							"response": []
+						},
 						{
-							"listen": "test",
-							"script": {
-								"id": "08b171a7-770b-439b-bfe5-8616c9443582",
-								"exec": [
-									"var response = pm.response.json();",
-									"pm.environment.set(\"order_id\", response.sale.orderId);"
-								],
-								"type": "text/javascript"
-							}
+							"name": "Mpos Validate",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"id": "440a871c-72e2-4402-88cc-520b1765896e"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"id": "0e85a563-b90e-484d-bde3-175962dd87d3"
+									}
+								}
+							],
+							"id": "439ceec6-b026-4a4e-88d1-97d9f85ad3ef",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"orderId\": {{order_id}},\n    \"terminalId\": \"123456\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bffpayment_url}}/1/mpos/validate"
+							},
+							"response": []
+						},
+						{
+							"name": "Buy mPOS",
+							"id": "498e32b6-568a-4a9f-89a2-37db14b50091",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": "{{bffpayment_url}}/1/buy/mpos"
+							},
+							"response": []
+						},
+						{
+							"name": "SDK Error Copy",
+							"id": "405583b7-853e-4859-9ec2-9ed1f8dbdb1f",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"order_id\": \"string\",\n  \"ref_number\": \"string\",\n  \"error_message\": \"string\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bffpayment_url}}/1/pos/error"
+							},
+							"response": []
 						}
 					],
-					"id": "78de2504-2346-4b29-92d9-44fa40c72018",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": {
-								"token": "{{token}}"
-							}
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"amount\": 1000,\n    \"signature\": \"signature\",\n    \"bin\": \"400000\",\n    \"tax\": {\n        \"amount\": 10,\n        \"name\": \"IVA 10%\"\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "{{bffpayment_url}}/1/mpos"
-					},
-					"response": []
+					"id": "ef1be81a-6466-4a61-92f3-97a9cdb79ec0"
 				},
 				{
-					"name": "Mpos Validate",
-					"event": [
+					"name": "PSE (COL)",
+					"item": [
 						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"id": "440a871c-72e2-4402-88cc-520b1765896e"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"id": "0e85a563-b90e-484d-bde3-175962dd87d3"
-							}
+							"name": "Get Banks",
+							"id": "0feb0182-38e4-4e4a-aaf3-f5e3a12d7970",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": "{{bffpayment_url}}/1/pse/banks"
+							},
+							"response": []
 						}
 					],
-					"id": "439ceec6-b026-4a4e-88d1-97d9f85ad3ef",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": {
-								"token": "{{token}}"
-							}
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"orderId\": {{order_id}},\n    \"terminalId\": \"123456\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "{{bffpayment_url}}/1/mpos/validate"
-					},
-					"response": []
-				},
-				{
-					"name": "Buy mPOS",
-					"id": "498e32b6-568a-4a9f-89a2-37db14b50091",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": {
-								"token": "{{token}}"
-							}
-						},
-						"method": "GET",
-						"header": [],
-						"url": "{{bffpayment_url}}/1/buy/mpos"
-					},
-					"response": []
-				},
-				{
-					"name": "SDK Error",
-					"id": "92f742f1-0a19-4e55-bdc4-28192aa0b433",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": {
-								"token": "{{token}}"
-							}
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"order_id\": \"string\",\n  \"ref_number\": \"string\",\n  \"error_message\": \"string\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "{{bffpayment_url}}/1/pos/error"
-					},
-					"response": []
+					"id": "c0dbc413-76b0-4063-b819-a5a918a93864"
 				},
 				{
 					"name": "QR",
