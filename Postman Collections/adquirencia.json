@@ -334,6 +334,177 @@
 					"id": "dcc31e5b-eaf8-492c-bca0-8432858f30cb"
 				},
 				{
+					"name": "Link de pago",
+					"item": [
+						{
+							"name": "Create order Link",
+							"id": "e43ac6f2-7a66-4f89-aa15-177471f4c10a",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"amount\": 10000,\n    \"tax\": {\n        \"amount\": 10,\n        \"name\": \"IVA 10%\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bffpayment_url}}/1/link"
+							},
+							"response": [
+								{
+									"id": "8ba7d1a8-3b69-40d1-a016-9e0e263348da",
+									"name": "Link without taxes",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"amount\": 10050\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{bffpayment_url}}/1/link"
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"responseTime": null,
+									"body": ""
+								},
+								{
+									"id": "75380ce0-679f-4a20-bb14-eaeefbbb843f",
+									"name": "Link with taxes",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"amount\": 1000,\n    \"tax\": {\n        \"amount\": 10,\n        \"name\": \"IVA 10%\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{bffpayment_url}}/1/link"
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"responseTime": null,
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Get status",
+							"id": "b044cecf-abe3-4d4b-97b6-db081d10390a",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bffpayment_url}}/1/link?token=93a351b51f804a8edc1090e42845f4f1772a19ad77ce1d60",
+									"host": [
+										"{{bffpayment_url}}"
+									],
+									"path": [
+										"1",
+										"link"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "93a351b51f804a8edc1090e42845f4f1772a19ad77ce1d60"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "LINK - Payment Method",
+							"id": "b30944e1-a514-4991-afd5-898707dbb31a",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n   \"payment_method\":\"PSE\",\n   \"pse_form\":{\n      \"financial_institution_code\":\"123\",\n      \"buyer_info\":{\n         \"full_name\":\"test test\",\n         \"user_type\":\"person\",\n         \"cellphone_number\":11111111,\n         \"address\":\"calle falsa 123\",\n         \"email\":\"jonatan.moreira@uala.com.ar\",\n         \"identification\":{\n            \"type\":\"person\",\n            \"number\":\"1666666\"\n         }\n      }\n   }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bffpayment_url}}/1/link/f84c2776-4220-461a-a875-35ddc25db74b"
+							},
+							"response": []
+						},
+						{
+							"name": "PSE - Payment Method",
+							"id": "c198211e-78ce-4df6-a430-233e8ccff8ad",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n   \"payment_method\":\"PSE\",\n   \"pse_form\":{\n      \"financial_institution_code\":\"123\",\n      \"buyer_info\":{\n         \"full_name\":\"test test\",\n         \"user_type\":\"person\",\n         \"cellphone_number\":11111111,\n         \"address\":\"calle falsa 123\",\n         \"email\":\"jonatan.moreira@uala.com.ar\",\n         \"identification\":{\n            \"type\":\"person\",\n            \"number\":\"1666666\"\n         }\n      }\n   }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bffpayment_url}}/1/link/f84c2776-4220-461a-a875-35ddc25db74b"
+							},
+							"response": []
+						}
+					],
+					"id": "274095b3-c9c4-44c1-beea-977e9a96d130"
+				},
+				{
 					"name": "Installments",
 					"id": "8f9b3125-94ef-445d-bece-55a70d8e7b31",
 					"protocolProfileBehavior": {
@@ -368,81 +539,6 @@
 					"response": []
 				},
 				{
-					"name": "Create order Link",
-					"id": "e43ac6f2-7a66-4f89-aa15-177471f4c10a",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": {
-								"token": "{{token}}"
-							}
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"amount\": 10000,\n    \"tax\": {\n        \"amount\": 10,\n        \"name\": \"IVA 10%\"\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "{{bffpayment_url}}/1/link"
-					},
-					"response": [
-						{
-							"id": "8ba7d1a8-3b69-40d1-a016-9e0e263348da",
-							"name": "Link without taxes",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"amount\": 10050\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": "{{bffpayment_url}}/1/link"
-							},
-							"_postman_previewlanguage": "Text",
-							"header": [],
-							"cookie": [],
-							"responseTime": null,
-							"body": ""
-						},
-						{
-							"id": "75380ce0-679f-4a20-bb14-eaeefbbb843f",
-							"name": "Link with taxes",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"amount\": 1000,\n    \"tax\": {\n        \"amount\": 10,\n        \"name\": \"IVA 10%\"\n    }\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": "{{bffpayment_url}}/1/link"
-							},
-							"_postman_previewlanguage": "Text",
-							"header": [],
-							"cookie": [],
-							"responseTime": null,
-							"body": ""
-						}
-					]
-				},
-				{
 					"name": "Create order mPOS",
 					"event": [
 						{
@@ -472,7 +568,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"amount\": 1000,\n    \"signature\": \"signature\",\n    \"bin\": \"437996\",\n    \"tax\": {\n        \"amount\": 10,\n        \"name\": \"IVA 10%\"\n    }\n}",
+							"raw": "{\n    \"amount\": 1000,\n    \"signature\": \"signature\",\n    \"bin\": \"400000\",\n    \"tax\": {\n        \"amount\": 10,\n        \"name\": \"IVA 10%\"\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -549,68 +645,6 @@
 						"method": "GET",
 						"header": [],
 						"url": "{{bffpayment_url}}/1/buy/mpos"
-					},
-					"response": []
-				},
-				{
-					"name": "Link - get status",
-					"id": "b044cecf-abe3-4d4b-97b6-db081d10390a",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": {
-								"token": "{{token}}"
-							}
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{bffpayment_url}}/1/link?token=93a351b51f804a8edc1090e42845f4f1772a19ad77ce1d60",
-							"host": [
-								"{{bffpayment_url}}"
-							],
-							"path": [
-								"1",
-								"link"
-							],
-							"query": [
-								{
-									"key": "token",
-									"value": "93a351b51f804a8edc1090e42845f4f1772a19ad77ce1d60"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Link - set payment method",
-					"id": "b30944e1-a514-4991-afd5-898707dbb31a",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": {
-								"token": "{{token}}"
-							}
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n   \"payment_method\":\"PSE\",\n   \"pse_form\":{\n      \"financial_institution_code\":\"123\",\n      \"buyer_info\":{\n         \"full_name\":\"test test\",\n         \"user_type\":\"person\",\n         \"cellphone_number\":11111111,\n         \"address\":\"calle falsa 123\",\n         \"email\":\"jonatan.moreira@uala.com.ar\",\n         \"identification\":{\n            \"type\":\"person\",\n            \"number\":\"1666666\"\n         }\n      }\n   }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "{{bffpayment_url}}/1/link/f84c2776-4220-461a-a875-35ddc25db74b"
 					},
 					"response": []
 				},
