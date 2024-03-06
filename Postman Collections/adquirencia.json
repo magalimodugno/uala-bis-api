@@ -840,6 +840,125 @@
 				}
 			],
 			"id": "3795888d-ca7c-4000-9024-9b04c43d4a7c"
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "Devoluciones ECOMMERCE",
+					"item": [
+						{
+							"name": "Generar devolución",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var response = pm.response.json();",
+											"pm.environment.set(\"refundId\", response.refund_transaction_id);"
+										],
+										"type": "text/javascript",
+										"id": "17275c73-9e64-4338-9cd9-771ca018bdba"
+									}
+								}
+							],
+							"id": "4b590f5c-5c82-4637-b839-9cd486445ea4",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"url": "{{bfftransactions_url}}/1/transaction/{{transactionId}}/refund"
+							},
+							"response": []
+						},
+						{
+							"name": "Confirmar Devolucion",
+							"id": "47c95bd1-4b95-490e-8297-747210f645ba",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{bfftransactions_url}}/1/refund/{{refundId}}/confirm"
+							},
+							"response": []
+						}
+					],
+					"id": "798a602c-32af-40b2-8f07-fe34fd0e3eab"
+				},
+				{
+					"name": "Transaction Detail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"pm.environment.set(\"transactionId\", response.transactionId);"
+								],
+								"type": "text/javascript",
+								"id": "7b185589-34fd-48f0-a845-60029d112bcc"
+							}
+						}
+					],
+					"id": "c5fae25b-8e77-4fcc-89ef-1543b5614829",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bfftransactions_url}}/1/transaction?transactionId=0704114a-af79-4b3d-a25e-ca51e2304bcf",
+							"host": [
+								"{{bfftransactions_url}}"
+							],
+							"path": [
+								"1",
+								"transaction"
+							],
+							"query": [
+								{
+									"key": "transactionId",
+									"value": "0704114a-af79-4b3d-a25e-ca51e2304bcf"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "a6477f61-6cf9-4708-b2ac-ee66680ff452"
 		}
 	]
 }
