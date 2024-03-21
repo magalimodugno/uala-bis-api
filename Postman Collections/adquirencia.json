@@ -227,7 +227,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  //\"ref_number\":{{gv_ref_number}},\n  \"ref_number\": \"d572ee25-0911-49ad-8df7-69b147d0547d\",\n  //\"order_id\":{{gv_order_id}},\n  \"order_id\": \"5aa4a5e5-7ef4-4098-a9d2-9f7a60528e08\"\n  //\"terminal_id\": {{gv_terminal_id}}\n}",
+									"raw": "{\n  \"ref_number\":{{gv_ref_number}},\n  \"order_id\":{{gv_order_id}}\n  //\"terminal_id\": {{gv_terminal_id}}\n}",
 									"options": {
 										"raw": {
 											"language": "json"
